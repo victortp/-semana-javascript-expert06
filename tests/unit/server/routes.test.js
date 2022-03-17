@@ -92,7 +92,7 @@ describe('#Routes - test suite for api response', () => {
     expect(params.response.writeHead).not.toHaveBeenCalled();
   });
 
-  test(`GET /index.html - should respond with file stream`, async () => {
+  test(`GET /index.html - should respond with file stream and correct Content-Type`, async () => {
     const filename = 'index.html';
     const params = makeParams('GET', `/${filename}`);
     const mockFileStream = TestUtil.generateReadableStream(['data']);
@@ -116,7 +116,14 @@ describe('#Routes - test suite for api response', () => {
     });
   });
 
-  test.todo(`GET /unknown - given an inexistent route it should respond with 404`);
+  test(`POST /unknown - given an inexistent route it should respond with 404`, async () => {
+    const params = makeParams('POST', '/unknown');
+
+    await handler(...params.values());
+
+    expect(params.response.writeHead).toHaveBeenCalledWith(404);
+    expect(params.response.end).toHaveBeenCalled();
+  });
 
   describe('exceptions', () => {
     test.todo('given an inexistent file it should respond with 404');
