@@ -6,6 +6,14 @@ import { Controller } from '../../../server/controller';
 
 const { pages, location } = config;
 
+const makeParams = (method, url) => {
+  const params = TestUtil.defaultHandleParams();
+  params.request.method = method;
+  params.request.url = url;
+
+  return params;
+};
+
 describe('#Routes - test suite for api response', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
@@ -13,10 +21,7 @@ describe('#Routes - test suite for api response', () => {
   });
 
   test('GET / - should redirect to home page', async () => {
-    const params = TestUtil.defaultHandleParams();
-    params.request.method = 'GET';
-    params.request.url = '/';
-
+    const params = makeParams('GET', '/');
     await handler(...params.values());
 
     expect(params.response.writeHead).toHaveBeenCalledWith(302, {
@@ -26,10 +31,7 @@ describe('#Routes - test suite for api response', () => {
   });
 
   test(`GET /home - should respond with ${pages.homeHTML} file stream`, async () => {
-    const params = TestUtil.defaultHandleParams();
-    params.request.method = 'GET';
-    params.request.url = '/home';
-
+    const params = makeParams('GET', '/home');
     const mockFileStream = TestUtil.generateReadableStream(['data']);
 
     jest
@@ -47,10 +49,7 @@ describe('#Routes - test suite for api response', () => {
   });
 
   test(`GET /controller - should respond with ${pages.controllerHTML} file stream`, async () => {
-    const params = TestUtil.defaultHandleParams();
-    params.request.method = 'GET';
-    params.request.url = '/controller';
-
+    const params = makeParams('GET', '/controller');
     const mockFileStream = TestUtil.generateReadableStream(['data']);
 
     jest
