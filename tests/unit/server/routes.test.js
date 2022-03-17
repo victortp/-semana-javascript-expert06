@@ -71,10 +71,10 @@ describe('#Routes - test suite for api response', () => {
   });
 
   test(`GET /file.ext - should respond with file stream`, async () => {
-    const filename = 'index.html';
+    const filename = 'file.ext';
     const params = makeParams('GET', `/${filename}`);
     const mockFileStream = TestUtil.generateReadableStream(['data']);
-    const expectedType = '.html';
+    const expectedType = '.ext';
 
     jest
       .spyOn(Controller.prototype, Controller.prototype.getFileStream.name)
@@ -89,9 +89,7 @@ describe('#Routes - test suite for api response', () => {
 
     expect(Controller.prototype.getFileStream).toHaveBeenCalledWith(`/${filename}`);
     expect(mockFileStream.pipe).toHaveBeenCalledWith(params.response);
-    expect(params.response.writeHead).toHaveBeenCalledWith(200, {
-      'Content-Type': CONTENT_TYPE[expectedType]
-    });
+    expect(params.response.writeHead).not.toHaveBeenCalled();
   });
 
   test.todo(`GET /unknown - given an inexistent route it should respond with 404`);
