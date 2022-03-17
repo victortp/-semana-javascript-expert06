@@ -92,6 +92,30 @@ describe('#Routes - test suite for api response', () => {
     expect(params.response.writeHead).not.toHaveBeenCalled();
   });
 
+  test(`GET /index.html - should respond with file stream`, async () => {
+    const filename = 'index.html';
+    const params = makeParams('GET', `/${filename}`);
+    const mockFileStream = TestUtil.generateReadableStream(['data']);
+    const expectedType = '.html';
+
+    jest
+      .spyOn(Controller.prototype, Controller.prototype.getFileStream.name)
+      .mockResolvedValue({
+        stream: mockFileStream,
+        type: expectedType
+      });
+
+    jest.spyOn(mockFileStream, 'pipe').mockReturnValue();
+
+    await handler(...params.values());
+
+    expect(Controller.prototype.getFileStream).toHaveBeenCalledWith(`/${filename}`);
+    expect(mockFileStream.pipe).toHaveBeenCalledWith(params.response);
+    expect(params.response.writeHead).toHaveBeenCalledWith(200, {
+      'Content-Type': CONTENT_TYPE[expectedType]
+    });
+  });
+
   test.todo(`GET /unknown - given an inexistent route it should respond with 404`);
 
   describe('exceptions', () => {
