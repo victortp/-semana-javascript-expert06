@@ -41,5 +41,18 @@ describe('#Service - test suite for service calls', () => {
     expect(name).toBe(join(publicDirectory, filename));
   });
 
-  test.todo('#getFileStream');
+  test('Should return a file stream', async () => {
+    const service = new Service();
+    const mockFileStream = TestUtil.generateReadableStream(['test']);
+    const mockType = '.html';
+    const mockFileName = 'test.html';
+
+    jest.spyOn(fs, fs.createReadStream.name).mockReturnValue(mockFileStream);
+    jest.spyOn(fsPromises, fsPromises.access.name).mockResolvedValue();
+
+    const { stream, type } = await service.getFileStream(mockFileName);
+
+    expect(stream).toStrictEqual(mockFileStream);
+    expect(type).toStrictEqual(mockType);
+  });
 });
