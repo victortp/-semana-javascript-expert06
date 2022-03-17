@@ -126,7 +126,18 @@ describe('#Routes - test suite for api response', () => {
   });
 
   describe('exceptions', () => {
-    test.todo('given an inexistent file it should respond with 404');
+    test('given an inexistent file it should respond with 404', async () => {
+      const params = makeParams('GET', '/index.png');
+
+      jest
+        .spyOn(Controller.prototype, Controller.prototype.getFileStream.name)
+        .mockRejectedValue(new Error('Error: ENOENT: no such file or directory'));
+
+      await handler(...params.values());
+
+      expect(params.response.writeHead).toHaveBeenCalledWith(404);
+      expect(params.response.end).toHaveBeenCalled();
+    });
     test.todo('given an error it should respond with 500');
   });
 });
